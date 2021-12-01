@@ -8,40 +8,43 @@ import { FiStar } from "react-icons/fi";
 
 function App() {
   const [emails, setEmail] = useState(initialEmails);
+  const [hideRead, setHideRead] = useState(false);
 
+  // count unread email===========================
   const countUnreadInbox = () => {
     let count = 0;
     emails.map(el => !el.read ? count += 1 : el);
     return count
   }
-
+  // count stared email===========================
   const countStars = () => {
     let count = 0;
     emails.map(el => el.starred ? count += 1 : el);
     return count
   }
-
+  // toggle read ================================
   const toggleRead = (target) => {
     const updatedArr = emails.map(el => {
       return el.id === target.id ? {...el, read: !target.read} : el;
    });
    setEmail(updatedArr);
   } 
-
+  // toggle star================================
   const toggleStar = (target) => {
     const updatedArr = emails.map(el => {
        return el.id === target.id ? {...el, starred: !target.starred} : el;
     });
     setEmail(updatedArr);
   }
-  const [checked, setChecked] = useState(false)
-  const getReadEmails = (emails) => {
-      const updatedArr = emails.filter(el => {
-        return  !el.read 
-     });
-      setEmail(updatedArr);
-      setChecked(!checked);
+  // get unreaded emails=======================
+  const getUnReadEmails = emails => emails.filter(email => !email.read);
+  let filteredEmail = emails;
+  if(hideRead){
+    filteredEmail = getUnReadEmails(emails)
+  }else{
+    filteredEmail = emails;
   }
+  
 
   return (
     <div className="app">
@@ -58,14 +61,14 @@ function App() {
           </li>
 
           <li className="item toggle">
-            <label htmlFor="hide-read">Hide read</label>
-            <input id="hide-read" type="checkbox" checked={checked} onChange={() => getReadEmails(emails)}/>
+            <label htmlFor="hide-read">Hide Read</label>
+            <input id="hide-read" type="checkbox" checked={hideRead} onChange={(e) => setHideRead(e.target.checked)}/>
           </li>
         </ul>
       </nav>
       <main className="emails">
         <ul>
-          {emails.map(el => {
+          {filteredEmail.map(el => {
             return (
               <li className="mail-container" key={el.id}>
                 <input type="checkbox" checked={el.read} onChange={() => toggleRead(el)}/>
